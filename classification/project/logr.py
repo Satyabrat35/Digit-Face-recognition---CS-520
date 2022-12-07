@@ -1,12 +1,12 @@
 import time
 
 from classification.project.data_loader import Data
-import numpy as np
-from collections import defaultdict
+from sklearn.linear_model import LogisticRegression
 import sklearn.model_selection
+import numpy as np
 
 
-class Perceptron():
+class LogR():
     digit_labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     face_labels = [0, 1]
     given_data_name_labels = {
@@ -16,8 +16,6 @@ class Perceptron():
 
     train_data_sizes = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     train_sampling_iteration = 5
-    learning_rate = 0.001
-    iterations = 30
 
     def __init__(self, train_data_file, train_label_file, train_size, width, height, classifier_data_name,
                  feature_type):
@@ -32,7 +30,6 @@ class Perceptron():
 
         self.full_data = None
         self.data = None
-        self.train_sample_labels = None
 
     def get_numpy_array_from_matrix(self, matrix):
         data_point = [1]
@@ -52,71 +49,44 @@ class Perceptron():
             self.data = self.full_data
             self.train_sample_labels = self.train_data_loader.labels
         else:
-            X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(self.full_data, self.train_data_loader.labels, test_size=1 - train_size)
+            X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(self.full_data,
+                                                                                        self.train_data_loader.labels,
+                                                                                        test_size=1 - train_size)
             self.train_sample_labels = y_train
             self.data = X_train
 
-    def update_weight_vector(self, weight_vector, input_vector, increment=False):
-        if increment:
-            weight_vector[0] += 1
-        else:
-            weight_vector[0] -= 1
-
-        for i in range(1, len(weight_vector)):
-            if increment:
-                weight_vector[i] += self.learning_rate * input_vector[i]
-            else:
-                weight_vector[i] -= self.learning_rate * input_vector[i]
-
     def train_model(self):
+        # neigh = KNeighborsClassifier(n_neighbors=10)
+        # neigh.fit(self.data, self.train_data_loader.labels)
+        # self.knn_model = neigh
 
         start = time.time()
-        label_size = len(self.given_data_name_labels)
-        actual_labels = self.train_sample_labels
-
-        # matrix init
-        weights = np.zeros((label_size, self.pixel_count + 1))
-
-        for iteration in range(self.iterations):
-            print(f"Epoch {iteration}")
-            change = False
-            for index, data_point in enumerate(self.data):
-                result = np.matmul(data_point, np.transpose(weights))
-                predicted_label = np.argmax(result)
-
-                if predicted_label != actual_labels[index]:
-                    #                     decrement predicted_label
-                    self.update_weight_vector(weights[predicted_label], data_point, False)
-                    #                     increment actual label
-                    self.update_weight_vector(weights[actual_labels[index]], data_point, True)
-                    change = True
-            if not change:
-                break
-        self.weights = weights
+        lR = LogisticRegression(random_state=0)
+        lR.fit(self.data, self.train_sample_labels)
+        self.lR = lR
         end = time.time()
         return end - start
 
     def make_prediction(self, matrix):
-        data = self.get_numpy_array_from_matrix(matrix)
-        function_output = np.matmul(data, np.transpose(self.weights))
-        return np.argmax(function_output)
+        # return self.knn_model.predict([self.get_numpy_array_from_matrix(matrix)])
+        return self.lR.predict([self.get_numpy_array_from_matrix(matrix)])
 
     @staticmethod
     def face_training_prediction():
-        face_model = Perceptron("/Users/pranoysarath/Downloads/classification/data/facedata/facedatatrain",
-                                "/Users/pranoysarath/Downloads/classification/data/facedata/facedatatrainlabels",
-                                400, 60, 70,
-                                'face', 'pixel')
+        face_model = LogR("/Users/pranoysarath/Downloads/classification/data/facedata/facedatatrain",
+                          "/Users/pranoysarath/Downloads/classification/data/facedata/facedatatrainlabels",
+                          400, 60, 70,
+                          'face', 'pixel')
 
         face_test_data = Data("/Users/pranoysarath/Downloads/classification/data/facedata/facedatatest",
                               "/Users/pranoysarath/Downloads/classification/data/facedata/facedatatestlabels",
                               150, 60, 70)
 
         accuracy = {}
-        for i in Perceptron.train_data_sizes:
+        for i in LogR.train_data_sizes:
             accuracy[i] = []
-        for train_size in Perceptron.train_data_sizes:
-            for iteration in range(Perceptron.train_sampling_iteration):
+        for train_size in LogR.train_data_sizes:
+            for iteration in range(LogR.train_sampling_iteration):
                 face_model.create_feature(train_size)
                 train_time = face_model.train_model()
                 correct_predictions = 0
@@ -132,18 +102,18 @@ class Perceptron():
 
     @staticmethod
     def digit_training_prediction():
-        digit_model = Perceptron("/Users/pranoysarath/Downloads/classification/data/digitdata/trainingimages",
-                                 "/Users/pranoysarath/Downloads/classification/data/digitdata/traininglabels", 5000,
-                                 28, 28,
-                                 'digit', 'pixel')
+        digit_model = LogR("/Users/pranoysarath/Downloads/classification/data/digitdata/trainingimages",
+                           "/Users/pranoysarath/Downloads/classification/data/digitdata/traininglabels", 5000,
+                           28, 28,
+                           'digit', 'pixel')
         digit_test_data = Data("/Users/pranoysarath/Downloads/classification/data/digitdata/testimages",
                                "/Users/pranoysarath/Downloads/classification/data/digitdata/testlabels", 1000,
                                28, 28, )
         accuracy = {}
-        for i in Perceptron.train_data_sizes:
+        for i in LogR.train_data_sizes:
             accuracy[i] = []
-        for train_size in Perceptron.train_data_sizes:
-            for iteration in range(Perceptron.train_sampling_iteration):
+        for train_size in LogR.train_data_sizes:
+            for iteration in range(LogR.train_sampling_iteration):
                 digit_model.create_feature(train_size)
                 train_time = digit_model.train_model()
                 correct_predictions = 0
@@ -159,5 +129,5 @@ class Perceptron():
 
 
 if __name__ == "__main__":
-    Perceptron.face_training_prediction()
-    Perceptron.digit_training_prediction()
+    LogR.face_training_prediction()
+    LogR.digit_training_prediction()

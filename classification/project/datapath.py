@@ -1,6 +1,7 @@
 import os
 class DataPath():
 
+
     ### Just in case if the init instantiaition fails
     def getPath(self ,data_variable_path):
         absolute_path = os.path.abspath(os.getcwd())

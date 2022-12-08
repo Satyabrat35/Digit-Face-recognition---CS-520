@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import copy
 from timeit import default_timer as timer
 
-
 class NaiveBayes():
     digit_labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     face_labels = [0, 1]
@@ -341,7 +340,7 @@ if __name__ == '__main__':
         print(counter, end='')
         final_prediction_stats.append([acc_val,statistics.mean(acc_val),statistics.stdev(acc_val),statistics.mean(time_taken)])
 
-    f = open("naive_bayes_results.txt" , "a")
+    f = open("naive_bayes_results.txt" , "w")
     f.writelines(pd.DataFrame(final_prediction_stats).to_string())
     plt.plot(pd.DataFrame(final_prediction_stats).iloc[:,1],training_ratio_list )
 

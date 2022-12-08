@@ -1,9 +1,14 @@
+"""
+Custom Implementation of perceptron classifier for face and Digit Data
+
+"""
 import time
 
 from classification.project.data_loader import Data
 import numpy as np
-from collections import defaultdict
 import sklearn.model_selection
+
+from classification.project.datapath import DataPath
 
 
 class Perceptron():
@@ -52,7 +57,9 @@ class Perceptron():
             self.data = self.full_data
             self.train_sample_labels = self.train_data_loader.labels
         else:
-            X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(self.full_data, self.train_data_loader.labels, test_size=1 - train_size)
+            X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(self.full_data,
+                                                                                        self.train_data_loader.labels,
+                                                                                        test_size=1 - train_size)
             self.train_sample_labels = y_train
             self.data = X_train
 
@@ -103,13 +110,13 @@ class Perceptron():
 
     @staticmethod
     def face_training_prediction():
-        face_model = Perceptron("/Users/pranoysarath/Downloads/classification/data/facedata/facedatatrain",
-                                "/Users/pranoysarath/Downloads/classification/data/facedata/facedatatrainlabels",
+        face_model = Perceptron(DataPath.getPath(0, 'TRAINING_FACE_DATA_PATH'),
+                                DataPath.getPath(0, 'TRAINING_FACE_LABEL_PATH'),
                                 400, 60, 70,
                                 'face', 'pixel')
 
-        face_test_data = Data("/Users/pranoysarath/Downloads/classification/data/facedata/facedatatest",
-                              "/Users/pranoysarath/Downloads/classification/data/facedata/facedatatestlabels",
+        face_test_data = Data(DataPath.getPath(0, 'TEST_FACE_DATA_PATH'),
+                              DataPath.getPath(0, 'TEST_FACE_LABEL_PATH'),
                               150, 60, 70)
 
         accuracy = {}
@@ -132,12 +139,12 @@ class Perceptron():
 
     @staticmethod
     def digit_training_prediction():
-        digit_model = Perceptron("/Users/pranoysarath/Downloads/classification/data/digitdata/trainingimages",
-                                 "/Users/pranoysarath/Downloads/classification/data/digitdata/traininglabels", 5000,
+        digit_model = Perceptron(DataPath.getPath(0, 'TRAINING_DIGIT_DATA_PATH'),
+                                 DataPath.getPath(0, 'TRAINING_DIGIT_LABEL_PATH'), 5000,
                                  28, 28,
                                  'digit', 'pixel')
-        digit_test_data = Data("/Users/pranoysarath/Downloads/classification/data/digitdata/testimages",
-                               "/Users/pranoysarath/Downloads/classification/data/digitdata/testlabels", 1000,
+        digit_test_data = Data(DataPath.getPath(0, 'TEST_DIGIT_DATA_PATH'),
+                               DataPath.getPath(0, 'TEST_DIGIT_LABEL_PATH'), 1000,
                                28, 28, )
         accuracy = {}
         for i in Perceptron.train_data_sizes:

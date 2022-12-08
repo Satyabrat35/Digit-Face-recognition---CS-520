@@ -1,9 +1,16 @@
+"""
+Uses Scikit Logistic Regression library to build a classifier model
+
+"""
+
 import time
 
 from classification.project.data_loader import Data
 from sklearn.linear_model import LogisticRegression
 import sklearn.model_selection
 import numpy as np
+
+from classification.project.datapath import DataPath
 
 
 class LogR():
@@ -73,13 +80,13 @@ class LogR():
 
     @staticmethod
     def face_training_prediction():
-        face_model = LogR("/Users/pranoysarath/Downloads/classification/data/facedata/facedatatrain",
-                          "/Users/pranoysarath/Downloads/classification/data/facedata/facedatatrainlabels",
+        face_model = LogR(DataPath.getPath(0, 'TRAINING_FACE_DATA_PATH'),
+                          DataPath.getPath(0, 'TRAINING_FACE_LABEL_PATH'),
                           400, 60, 70,
                           'face', 'pixel')
 
-        face_test_data = Data("/Users/pranoysarath/Downloads/classification/data/facedata/facedatatest",
-                              "/Users/pranoysarath/Downloads/classification/data/facedata/facedatatestlabels",
+        face_test_data = Data(DataPath.getPath(0, 'TEST_FACE_DATA_PATH'),
+                              DataPath.getPath(0, 'TEST_FACE_LABEL_PATH'),
                               150, 60, 70)
 
         accuracy = {}
@@ -102,12 +109,12 @@ class LogR():
 
     @staticmethod
     def digit_training_prediction():
-        digit_model = LogR("/Users/pranoysarath/Downloads/classification/data/digitdata/trainingimages",
-                           "/Users/pranoysarath/Downloads/classification/data/digitdata/traininglabels", 5000,
+        digit_model = LogR(DataPath.getPath(0, 'TRAINING_DIGIT_DATA_PATH'),
+                           DataPath.getPath(0, 'TRAINING_DIGIT_LABEL_PATH'), 5000,
                            28, 28,
                            'digit', 'pixel')
-        digit_test_data = Data("/Users/pranoysarath/Downloads/classification/data/digitdata/testimages",
-                               "/Users/pranoysarath/Downloads/classification/data/digitdata/testlabels", 1000,
+        digit_test_data = Data(DataPath.getPath(0, 'TEST_DIGIT_DATA_PATH'),
+                               DataPath.getPath(0, 'TEST_DIGIT_LABEL_PATH'), 1000,
                                28, 28, )
         accuracy = {}
         for i in LogR.train_data_sizes:

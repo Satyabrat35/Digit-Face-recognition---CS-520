@@ -1,3 +1,7 @@
+"""
+A Data Loader module with utility functions  to read the images and convert them into matrix representing the pixels values of 0s and 1s
+
+"""
 import os
 import sys
 import zipfile
